@@ -28,24 +28,6 @@ You need to call the Capistrano task provided by this gem by yourself (this way 
 
 `after 'rsync:stage_done', 'spa:all'`
 
-If you need asset pipeline's assets on production, then it's advised to precompile then locally just after running `spa:all`. This way rails assets will get appended to public folder before rsync'ing data to server. As an alternative to `capistrano/rails/migrations`, you can do it like:
-
-    # Precompile webpack assets locally
-    namespace :assets do
-      task :compile do
-        run_locally do
-          with rails_env: fetch(:stage) do
-            Dir.chdir fetch(:rsync_stage) do
-              execute 'cp config/database.dev.yml config/database.yml'
-              execute :bundle, 'exec bin/rails assets:precompile'
-            end
-          end
-        end
-      end
-    end
-
-    after 'spa:all', 'assets:compile'
-
 #### Configuration
 
 * `:spa_repo_url` - required
@@ -58,9 +40,19 @@ If you need asset pipeline's assets on production, then it's advised to precompi
 
 #### Notes
 
+To precompile rails assets properly, you can either:
+
+* do it locally after SPA app is built, for example:
+
+    `after 'spa:all', 'assets:my_custom_precompile_task'`
+    
+* or using `capistrano-rails`, but to make it work you need to clear one of it's tasks which is symlinking `public/assets` dir, which we don't want:
+
+     `Rake::Task["deploy:set_linked_dirs"].clear`
+
 If you don't want to use rsync strategy for your rails app, you can skip the last task (`spa:copy_to_rsync_dir`) and move the SPA build to the server by yourself in anyway you like it.
 
-Also, depending on your `apache/nginx` server config, `index.html` file might be served automatically, or if it's not on static files whitelist you can either add it to the list or serve `index.html` from controller, like:
+Also, depending on your `apache/nginx` server config, `index.html` should be served automatically, but if it's not on static files whitelist you can either add it to the list or serve `index.html` from controller, like:
 
     root "welcome#index"
 
