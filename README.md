@@ -59,3 +59,11 @@ If you need asset pipeline's assets on production, then it's advised to precompi
 #### Notes
 
 If you don't want to use rsync strategy for your rails app, you can skip the last task (`spa:copy_to_rsync_dir`) and move the SPA build to the server by yourself in anyway you like it.
+
+Also, depending on your `apache/nginx` server config, `index.html` file might be served automatically, or if it's not on static files whitelist you can either add it to the list or serve `index.html` from controller, like:
+
+    root "welcome#index"
+
+    def index
+      render file: 'public/index.html', layout: false
+    end    
