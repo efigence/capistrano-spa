@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
   gem.name          = "capistrano-spa"
-  gem.version       = '0.0.1'
+  gem.version       = '0.0.2'
   gem.authors       = ["Jacek Grzybowski"]
   gem.email         = ["jacek213@gmail.com"]
   gem.description   = %q{Capistrano tasks for Single Page Apps deployment}
@@ -18,5 +18,4 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency 'capistrano', '~> 3.1'
-  gem.add_dependency 'capistrano-bundler', '~> 1.1'
 end
